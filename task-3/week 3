@@ -1,0 +1,177 @@
+# TASK – III
+
+## Seller and Inventory Management System
+
+### 1. Introduction
+
+The Seller and Inventory Management System is a module of the E-Commerce Order Management System that manages seller information, products, and stock availability. It helps administrators and sellers maintain accurate inventory records and identify products that are available or unavailable for purchase.
+
+### 2. Objectives
+
+The main objectives of the Seller and Inventory Management System are:
+
+* To maintain seller information.
+* To maintain product information associated with sellers.
+* To track the quantity of products available in stock.
+* To identify available and unavailable products.
+* To establish relationships between sellers, products, and inventory.
+* To generate inventory status reports.
+* To reduce errors in manual inventory management.
+
+### 3. Seller Table
+
+The Seller table stores information about sellers who provide products through the e-commerce system.
+
+| Field Name  | Data Type    | Description             |
+| ----------- | ------------ | ----------------------- |
+| Seller_ID   | INT          | Unique ID of the seller |
+| Seller_Name | VARCHAR(100) | Name of the seller      |
+| Email       | VARCHAR(100) | Seller email address    |
+| Phone       | VARCHAR(15)  | Seller contact number   |
+| Address     | VARCHAR(255) | Seller address          |
+| Status      | VARCHAR(20)  | Active or Inactive      |
+
+**Primary Key:** Seller_ID
+
+### 4. Product Table
+
+The Product table stores information about products sold by different sellers.
+
+| Field Name   | Data Type     | Description              |
+| ------------ | ------------- | ------------------------ |
+| Product_ID   | INT           | Unique ID of the product |
+| Seller_ID    | INT           | ID of the seller         |
+| Product_Name | VARCHAR(100)  | Name of the product      |
+| Category     | VARCHAR(50)   | Product category         |
+| Price        | DECIMAL(10,2) | Price of the product     |
+| Description  | VARCHAR(255)  | Product description      |
+
+**Primary Key:** Product_ID
+**Foreign Key:** Seller_ID references Seller(Seller_ID)
+
+### 5. Inventory Table
+
+The Inventory table maintains stock information for products.
+
+| Field Name     | Data Type   | Description                  |
+| -------------- | ----------- | ---------------------------- |
+| Inventory_ID   | INT         | Unique inventory ID          |
+| Product_ID     | INT         | ID of the product            |
+| Stock_Quantity | INT         | Number of products available |
+| Reorder_Level  | INT         | Minimum stock level          |
+| Stock_Status   | VARCHAR(20) | Available or Unavailable     |
+| Last_Updated   | DATE        | Date of last stock update    |
+
+**Primary Key:** Inventory_ID
+**Foreign Key:** Product_ID references Product(Product_ID)
+
+### 6. Relationships
+
+The relationships between the tables are:
+
+**Seller → Product → Inventory**
+
+* One seller can sell multiple products.
+* Each product is associated with a seller.
+* Each product has inventory information.
+* Inventory stores the available quantity of each product.
+
+### 7. Seller Product Information
+
+The system maintains the following information for each seller's products:
+
+* Seller name
+* Product name
+* Product category
+* Product price
+* Product description
+* Available stock
+* Reorder level
+* Stock status
+
+This allows sellers and administrators to easily monitor the products associated with each seller.
+
+### 8. Tracking Product Availability
+
+The system checks the stock quantity to determine whether a product is available.
+
+Example:
+
+* If `Stock_Quantity > 0`, the product is **Available**.
+* If `Stock_Quantity = 0`, the product is **Unavailable**.
+
+Products with low stock can also be identified using the reorder level.
+
+For example, if:
+
+**Stock Quantity = 5**
+**Reorder Level = 10**
+
+The system can identify the product as **Low Stock** and indicate that additional stock may be required.
+
+### 9. Inventory Status Report
+
+The system can generate an inventory status report containing:
+
+| Product ID | Product Name | Seller          | Stock Quantity | Reorder Level | Status      |
+| ---------- | ------------ | --------------- | -------------: | ------------: | ----------- |
+| 101        | Laptop       | ABC Electronics |             15 |             5 | Available   |
+| 102        | Headphones   | XYZ Traders     |              0 |            10 | Unavailable |
+| 103        | Keyboard     | ABC Electronics |              4 |             8 | Low Stock   |
+| 104        | Mouse        | Tech Store      |             25 |             5 | Available   |
+
+The report helps administrators and sellers monitor current inventory levels and take appropriate action.
+
+### 10. Sample SQL Tables
+
+```sql
+CREATE TABLE Seller (
+    Seller_ID INT PRIMARY KEY,
+    Seller_Name VARCHAR(100),
+    Email VARCHAR(100),
+    Phone VARCHAR(15),
+    Address VARCHAR(255),
+    Status VARCHAR(20)
+);
+
+CREATE TABLE Product (
+    Product_ID INT PRIMARY KEY,
+    Seller_ID INT,
+    Product_Name VARCHAR(100),
+    Category VARCHAR(50),
+    Price DECIMAL(10,2),
+    Description VARCHAR(255),
+    FOREIGN KEY (Seller_ID) REFERENCES Seller(Seller_ID)
+);
+
+CREATE TABLE Inventory (
+    Inventory_ID INT PRIMARY KEY,
+    Product_ID INT,
+    Stock_Quantity INT,
+    Reorder_Level INT,
+    Stock_Status VARCHAR(20),
+    Last_Updated DATE,
+    FOREIGN KEY (Product_ID) REFERENCES Product(Product_ID)
+);
+```
+
+### 11. Sample Inventory Status Query
+
+```sql
+SELECT 
+    Product.Product_ID,
+    Product.Product_Name,
+    Seller.Seller_Name,
+    Inventory.Stock_Quantity,
+    Inventory.Reorder_Level,
+    Inventory.Stock_Status
+FROM Product
+JOIN Seller
+ON Product.Seller_ID = Seller.Seller_ID
+JOIN Inventory
+ON Product.Product_ID = Inventory.Product_ID;
+```
+
+### 12. Expected Outcome
+
+The Seller and Inventory Management System provides an organized method for managing sellers, products, and stock. It allows the system to identify available, unavailable, and low-stock products and provides useful inventory reports to sell
